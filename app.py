@@ -13,10 +13,10 @@ from utils.nifty100 import NIFTY100
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-st.set_page_config(page_title="Stock Spike Reasoning", layout="wide")
+st.set_page_config(page_title="Stock Movement Reason Finder", layout="wide")
 
-st.title("📈 Stock Spike Reasoning ")
-st.write("Analyze NIFTY100 stocks and explain major spikes using news + Gemini AI reasoning.")
+st.title("📈 Stock Movement Reasoning ")
+st.write("Analyze NIFTY100 stocks and explain major spikes using Google News + Gemini AI reasoning.")
 
 # --- User Controls ---
 days_range = st.slider("Select Day Range for Analysis", 1, 30, 7)
