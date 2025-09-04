@@ -1,19 +1,44 @@
+import os
 import google.generativeai as genai
+from dotenv import load_dotenv
 
-def generate_reasoning(stock_info: str, headlines: list, api_key: str) -> str:
-    """Use Gemini API to generate reasoning from news headlines."""
+# Load API key from .env
+load_dotenv()
+DEFAULT_API_KEY = os.getenv("GEMINI_API_KEY")
+
+def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_API_KEY) -> str:
+    """
+    Use Gemini API to generate reasoning from news headlines.
+    
+    Args:
+        stock_info (str): Information about the stock (e.g., price change, company details).
+        headlines (list): List of news headlines (each item should be a dict with "title").
+        api_key (str): Gemini API key. If not provided, will use the one from .env.
+
+    Returns:
+        str: Concise explanation for why the stock may have moved.
+    """
     if not api_key:
-        return "Gemini API key not found."
+        return "❌ Gemini API key not found."
 
     try:
+        # Configure Gemini
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.5-pro")
+        model = genai.GenerativeModel("gemini-1.5-flash")  # fast & cost-efficient
 
-        headlines_text = "\n".join([f"- {h['title']}" for h in headlines]) if headlines else "No major news available."
+        # Prepare headlines text
+        headlines_text = (
+            "\n".join([f"- {h.get('title', '')}" for h in headlines]) 
+            if headlines else "No major news available."
+        )
+
+        # Prompt
         prompt = f"""
         Stock Analysis:
         {stock_info}
 
+        Recent News:
+        {headlines_text}
 
         Please summarize why this stock may have moved in a way that a retail investor can easily understand. 
         - Use simple language. 
@@ -23,7 +48,10 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str) -> str:
         - Keep it concise and actionable.
         """
 
+        # Gemini call
         response = model.generate_content(prompt)
-        return response.text if response and response.text else "No explanation generated."
+
+        return response.text.strip() if response.text else "⚠️ No response from Gemini."
+
     except Exception as e:
-        return f"Error generating reasoning: {str(e)}"
+        return f"⚠️ Error generating reasoning: {str(e)}"
