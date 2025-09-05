@@ -34,7 +34,7 @@ if st.button("🔍 Analyze"):
                     results.append((ticker, change, df))
 
     if not results:
-        st.error("No stock data found.")
+        st.error("No stock data found")
     else:
         df_changes = pd.DataFrame(results, columns=["Ticker", "Change%", "Data"])
         df_changes.sort_values(by="Change%", ascending=False, inplace=True)
