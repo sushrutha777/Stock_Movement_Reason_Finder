@@ -16,7 +16,8 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_
         api_key (str): Gemini API key. If not provided, will use the one from .env.
 
     Returns:
-        str: Concise explanation for why the stock may have moved.
+        str: Concise explanation for why the stock may have moved,
+             separated with a divider line for readability.
     """
     if not api_key:
         return "❌ Gemini API key not found."
@@ -51,7 +52,12 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_
         # Gemini call
         response = model.generate_content(prompt)
 
-        return response.text.strip() if response.text else "⚠️ No response from Gemini."
+        summary = response.text.strip() if response.text else "⚠️ No response from Gemini."
+
+        # Add a separator line at the end
+        # Add a full-width horizontal line instead of a fixed 50 chars
+        return f"{summary}\n\n---\n\n"
+
 
     except Exception as e:
         return f"⚠️ Error generating reasoning: {str(e)}"
