@@ -24,7 +24,7 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_
     try:
         # Configure Gemini
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")  # fast & cost-efficient
+        model = genai.GenerativeModel("gemini-2.5-flash")  # fast & cost-efficient
 
         # Prepare headlines text
         headlines_text = (

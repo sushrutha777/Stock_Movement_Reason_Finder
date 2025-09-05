@@ -72,6 +72,3 @@ if st.button("🔍 Analyze"):
             reasoning_text = generate_reasoning(stock_info, headlines, api_key=GEMINI_API_KEY)
             st.subheader("🤖 AI Summary")
             st.markdown(reasoning_text, unsafe_allow_html=True)
-
-st.markdown("---")
-st.caption("Built with Streamlit, yfinance, Plotly, Google News RSS, and Gemini API • Team: Sushrutha & Group")
