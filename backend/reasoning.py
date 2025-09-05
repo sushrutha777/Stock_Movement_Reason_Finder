@@ -25,7 +25,7 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_
     try:
         # Configure Gemini
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.5-flash")  # fast & cost-efficient
+        model = genai.GenerativeModel("gemini-2.5-pro") 
 
         # Prepare headlines text
         headlines_text = (
@@ -41,12 +41,14 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_
         Recent News:
         {headlines_text}
 
-        Please summarize why this stock may have moved in a way that a retail investor can easily understand. 
-        - Use simple language. 
-        - Give 3-5 clear bullet points explaining the key reasons. 
-        - Highlight any major positive or negative factors affecting the stock price.
-        - Avoid technical jargon.
-        - Keep it concise and actionable.
+        Task:
+        Please summarize why this stock may have moved in a way that a retail investor can easily understand.
+        - Start with percentage of change in the stock(no intro sentences like 'Of course' or 'Here is a summary').  
+        - Use simple, clear language for retail investors.  
+        - Give 3–4 short bullet points explaining the key factors.  
+        - Highlight both positive and negative drivers.  
+        - Keep it concise and actionable.  
+        - Avoid unnecessary background or long explanations.
         """
 
         # Gemini call
