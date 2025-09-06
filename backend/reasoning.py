@@ -45,8 +45,7 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_
         Please summarize why this stock may have moved in a way that a retail investor can easily understand.
         - Start with percentage of change in the stock(no intro sentences like 'Of course' or 'Here is a summary').  
         - Use simple, clear language for retail investors.  
-        - Give 3–4 short bullet points explaining the key factors.  
-        - Highlight both positive and negative drivers.  
+        - Give 3–4 short bullet points explaining the key factors.
         - Keep it concise and actionable.  
         - Avoid unnecessary background or long explanations.
         """

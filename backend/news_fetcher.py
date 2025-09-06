@@ -1,5 +1,4 @@
 import feedparser
-
 def fetch_news_rss(query: str, max_headlines: int = 5):
     """Fetch latest Google News headlines using RSS."""
     try:
