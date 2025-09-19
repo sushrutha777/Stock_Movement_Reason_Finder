@@ -19,7 +19,6 @@ It analyzes **NIFTY100 stocks**, identifies **top gainers and losers**, and prov
    ```bash
    git clone https://github.com/sushrutha777/Stock_Movement_Reason_Finder.git
    cd Stock_Movement_Reason_Finder
-
 2. Create a new environment and install dependencies:
 
    ```bash
