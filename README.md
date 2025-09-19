@@ -4,7 +4,6 @@ This project is a **stock movement reason finder web app** built with **Streamli
 It analyzes **NIFTY100 stocks**, identifies **top gainers and losers**, and provides **AI-powered reasoning** for major price movements using **Google RSS news** and **Gemini Pro API**.  
 
 ---
-
 ## 🚀 Features
 - **Top 5 Gainers & Losers** detection based on stock price changes.
 - **Google RSS news fetching** to gather relevant headlines for each stock.
@@ -14,8 +13,6 @@ It analyzes **NIFTY100 stocks**, identifies **top gainers and losers**, and prov
 - Optimized with **`@st.cache_resource`** (or Streamlit caching) to reduce redundant API calls.
 
 ---
-
-
 ## Installation and Setup
 
 1. Clone this repository:
@@ -30,4 +27,3 @@ It analyzes **NIFTY100 stocks**, identifies **top gainers and losers**, and prov
    conda activate ./env
    pip install -r requirements.txt
    ```
-
