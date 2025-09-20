@@ -43,7 +43,7 @@ if st.button("🔍 Analyze"):
         if analysis_type == "🚀 Top 5 Gainers":
             selected = df_changes.head(5)
         else:  # 📉 Top 5 Losers
-            selected = df_changes.tail(5)
+            selected = df_changes.tail(5).iloc[::-1]
 
         st.subheader(analysis_type)
         st.dataframe(selected[["Ticker", "Change%"]].round(2))
