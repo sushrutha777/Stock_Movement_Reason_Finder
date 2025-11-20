@@ -11,7 +11,7 @@ It analyzes **NIFTY100 stocks**, identifies **top gainers and losers**, and prov
 - **Modular backend** with separate scripts for news fetching, reasoning, spike detection, and top movers.
 - Optimized with **`@st.cache_resource`** (or Streamlit caching) to reduce redundant API calls.
 
-## Installation and Setup
+## 📦 Installation and Setup
 
 1. Clone this repository:
    ```bash
