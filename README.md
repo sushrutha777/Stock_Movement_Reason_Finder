@@ -21,12 +21,16 @@ It analyzes **NIFTY100 stocks**, identifies **top gainers and losers**, and prov
    ```bash
    git clone https://github.com/sushrutha777/Stock_Movement_Reason_Finder.git
    cd Stock_Movement_Reason_Finder
-   ```
-
-2. Create a new environment and install dependencies:
-
+2. Create Virtual Environment:
    ```bash
-   conda create --prefix ./env python=3.11
-   conda activate ./env
-   pip install -r requirements.txt
-   ```
+    python -m venv venv
+   .\venv\Scripts\activate
+3. Install the required dependencies:
+   ```bash
+    pip install -r requirements.txt
+4. Create a .env file in the project root and add your Google Gemini API key:
+   ```bash
+    GOOGLE_API_KEY=your_api_key_here
+5. Run the Streamlit app:
+   ```bash
+    streamlit run app.py
