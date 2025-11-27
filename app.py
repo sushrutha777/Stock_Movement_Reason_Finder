@@ -71,7 +71,7 @@ if st.session_state.top5_df is not None:
     st.dataframe(display, use_container_width=True)
 
     st.markdown("---")
-    st.subheader("🎯 Select stock(s) from Top-5 to inspect")
+    st.subheader("🎯 Select stocks from Top 5 to inspect")
     tickers_list = top5_df["Ticker"].tolist()
 
     # choose single or multiple - using multiselect to allow multiple
