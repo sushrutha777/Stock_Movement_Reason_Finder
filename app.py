@@ -15,7 +15,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 st.set_page_config(page_title="Stock Movement Reason Finder", layout="wide")
 
-st.title("📈 Stock jai Movement Reasoning ")
+st.title("📈 Stock Movement Reasoning ")
 st.write("Analyze NIFTY100 stocks and explain major spikes using Google News + Gemini AI reasoning.")
 
 # --- User Controls ---
@@ -61,11 +61,13 @@ if st.session_state.top5_df is not None:
     st.subheader(analysis_type)
     top5_df = st.session_state.top5_df.copy()
 
-    # prepare display table with Rank 1-5 and formatted Change%
+    # prepare display table without a Rank column; set index to start from 1
     display = top5_df[["Ticker", "Change%"]].reset_index(drop=True)
-    display.insert(0, "Rank", range(1, len(display) + 1))
+    display.index = display.index + 1                 # index now starts at 1
+    display.index.name = ""                       
     display["Change%"] = display["Change%"].apply(lambda x: f"{x:+.2f}%")
 
+    # show the dataframe — the leftmost index will be 1..n (no separate "Rank" column)
     st.dataframe(display, use_container_width=True)
 
     st.markdown("---")
@@ -113,5 +115,3 @@ if st.session_state.top5_df is not None:
                 reasoning_text = generate_reasoning(stock_info, headlines, api_key=GEMINI_API_KEY)
                 st.subheader("Summary")
                 st.markdown(reasoning_text, unsafe_allow_html=True)
-else:
-    st.info("Click '🔍 Analyze' to compute Top-5 gainers/losers, then pick which stock(s) to inspect.")
