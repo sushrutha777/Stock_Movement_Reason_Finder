@@ -20,7 +20,7 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_
              separated with a divider line for readability.
     """
     if not api_key:
-        return "❌ Gemini API key not found."
+        return "Gemini API key not found."
 
     try:
         # Configure Gemini
