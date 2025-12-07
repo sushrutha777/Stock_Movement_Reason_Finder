@@ -1,40 +1,54 @@
 import os
+from typing import List, Dict, Optional
+
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Load API key from .env
+# Load env vars once at import time
 load_dotenv()
 DEFAULT_API_KEY = os.getenv("GEMINI_API_KEY")
 
-def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_API_KEY) -> str:
+
+class ReasoningGenerator:
     """
-    Use Gemini API to generate reasoning from news headlines.
-    
-    Args:
-        stock_info (str): Information about the stock (e.g., price change, company details).
-        headlines (list): List of news headlines (each item should be a dict with "title").
-        api_key (str): Gemini API key. If not provided, will use the one from .env.
-
-    Returns:
-        str: Concise explanation for why the stock may have moved,
-             separated with a divider line for readability.
+    Service class to generate reasoning for stock moves using Gemini API.
     """
-    if not api_key:
-        return "Gemini API key not found."
 
-    try:
-        # Configure Gemini
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.5-flash") 
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        model_name: str = "gemini-2.5-flash",
+    ):
+        """
+        Initialize the ReasoningGenerator.
 
-        # Prepare headlines text
-        headlines_text = (
-            "\n".join([f"- {h.get('title', '')}" for h in headlines]) 
-            if headlines else "No major news available."
-        )
+        Args:
+            api_key (str, optional): Gemini API key. If None, will use .env value.
+            model_name (str): Gemini model name.
+        """
+        self.api_key = api_key or DEFAULT_API_KEY
+        self.model_name = model_name
 
-        # Prompt
-        prompt = f"""
+        if not self.api_key:
+            # You can raise an error here instead if you prefer
+            print("Warning: GEMINI_API_KEY not found. Reasoning generation will fail.")
+
+        # Configure Gemini once
+        if self.api_key:
+            genai.configure(api_key=self.api_key)
+            self.model = genai.GenerativeModel(self.model_name)
+        else:
+            self.model = None
+
+    def _build_headlines_text(self, headlines: List[Dict]) -> str:
+        """Convert list of headline dicts into displayable text."""
+        if not headlines:
+            return "No major news available."
+        return "\n".join([f"- {h.get('title', '')}" for h in headlines])
+
+    def _build_prompt(self, stock_info: str, headlines_text: str) -> str:
+        """Create the prompt for Gemini."""
+        return f"""
         Stock Analysis:
         {stock_info}
 
@@ -47,18 +61,31 @@ def generate_reasoning(stock_info: str, headlines: list, api_key: str = DEFAULT_
         - Use simple, clear language for retail investors.  
         - Give 3-4 short bullet points explaining the key factors.
         - Keep it concise and actionable.  
-        - Avoid unnecessary background or long explanations Make It Perfect.
+        - Avoid unnecessary background or long explanations. Make it perfect.
         """
 
-        # Gemini call
-        response = model.generate_content(prompt)
+    def generate_reasoning(self, stock_info: str, headlines: List[Dict]) -> str:
+        """
+        Generate a concise explanation of stock movement.
 
-        summary = response.text.strip() if response.text else "No response from Gemini."
+        Args:
+            stock_info (str): Info about the stock (price change, company details, etc.).
+            headlines (list[dict]): List of headlines with "title" key.
 
-        # Add a separator line at the end
-        # Add a full-width horizontal line instead of a fixed 50 chars
-        return f"{summary}\n\n---\n\n"
+        Returns:
+            str: Explanation + separator line.
+        """
+        if not self.api_key or not self.model:
+            return "Gemini API key not found."
 
+        try:
+            headlines_text = self._build_headlines_text(headlines)
+            prompt = self._build_prompt(stock_info, headlines_text)
 
-    except Exception as e:
-        return f"Error generating reasoning: {str(e)}"
+            response = self.model.generate_content(prompt)
+            summary = response.text.strip() if response.text else "No response from Gemini."
+
+            return f"{summary}\n\n---\n\n"
+
+        except Exception as e:
+            return f"Error generating reasoning: {str(e)}"
