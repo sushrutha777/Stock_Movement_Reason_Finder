@@ -17,16 +17,24 @@ It analyzes **NIFTY100 stocks**, identifies **top gainers and losers**, and prov
    ```bash
    git clone https://github.com/sushrutha777/Stock_Movement_Reason_Finder.git
    cd Stock_Movement_Reason_Finder
-2. Create Virtual Environment:
+2. Install uv(If not installed):
    ```bash
-    python -m venv venv
-   .\venv\Scripts\activate
-3. Install the required dependencies:
+   pip install uv
+3. Create Virtual Environment:
    ```bash
-    pip install -r requirements.txt
-4. Create a .env file in the project root and add your Google Gemini API key:
+    # Create virtual environment
+    uv venv
+    # Activate the virtual environment
+    # On Windows:
+    .venv\Scripts\activate
+    # On macOS/Linux:
+    source .venv/bin/activate
+4. Install the required dependencies:
+   ```bash
+    uv add -r requirements.txt
+5. Create a .env file in the project root and add your Google Gemini API key:
    ```bash
     GOOGLE_API_KEY=your_api_key_here
-5. Run the Streamlit app:
+6. Run the Streamlit app:
    ```bash
     streamlit run app.py
