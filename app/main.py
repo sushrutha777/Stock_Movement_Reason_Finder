@@ -34,4 +34,14 @@ app.include_router(router)
 @app.get("/", tags=["Health"])
 def health_check():
     """Root endpoint — confirms the API is running."""
-    return {"status": "running"}
+    import os
+    key = os.getenv("GEMINI_API_KEY")
+    status = "running"
+    key_info = "not set"
+    if key:
+        key_info = f"{key[:4]}...{key[-4:]}" if len(key) > 8 else "set but too short"
+    
+    return {
+        "status": status,
+        "gemini_api_key": key_info
+    }

@@ -20,6 +20,7 @@ from app.schemas.stock_schema import (
     TopMoversResponse,
     StockMover,
     Headline,
+    PricePoint,
 )
 
 load_dotenv()
@@ -155,6 +156,10 @@ def get_reason(
             change_percent=change,
             reason=reasoning_text,
             headlines=[Headline(**h) for h in headlines],
+            history=[
+                PricePoint(date=str(date), close=float(close))
+                for date, close in df["Close"].items()
+            ],
         )
     except HTTPException:
         raise

@@ -17,16 +17,17 @@ class ReasoningGenerator:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model_name: str = "gemini-2.5-flash",
+        model_name: str = "gemini-1.5-flash",
     ):
         """
         Initialize the ReasoningGenerator.
 
         Args:
-            api_key (str, optional): Gemini API key. If None, will use .env value.
+            api_key (str, optional): Gemini API key. If None, will use .env vlaue.
             model_name (str): Gemini model name.
         """
-        self.api_key = api_key or DEFAULT_API_KEY
+        # Prioritize passed key, then environment variable
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY") or DEFAULT_API_KEY
         self.model_name = model_name
 
         if not self.api_key:

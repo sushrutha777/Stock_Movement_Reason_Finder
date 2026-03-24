@@ -14,6 +14,13 @@ class Headline(BaseModel):
     link: str = Field(..., description="URL to the full article")
 
 
+class PricePoint(BaseModel):
+    """A single price point for chart rendering."""
+
+    date: str = Field(..., description="Date string")
+    close: float = Field(..., description="Closing price")
+
+
 class ReasonResponse(BaseModel):
     """Response for the /reason/{stock} endpoint."""
 
@@ -24,6 +31,9 @@ class ReasonResponse(BaseModel):
     reason: str = Field(..., description="AI-generated reasoning for price movement")
     headlines: List[Headline] = Field(
         default_factory=list, description="Recent news headlines used for reasoning"
+    )
+    history: List[PricePoint] = Field(
+        default_factory=list, description="Historical price data for chart rendering"
     )
 
 
