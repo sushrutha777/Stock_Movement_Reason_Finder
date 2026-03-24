@@ -17,7 +17,7 @@ class ReasoningGenerator:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model_name: str = "gemini-1.5-flash",
+        model_name: str = "gemini-2.5-flash",
     ):
         """
         Initialize the ReasoningGenerator.
