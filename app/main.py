@@ -32,6 +32,7 @@ app.include_router(router)
 
 
 @app.get("/", tags=["Health"])
+@app.head("/", tags=["Health"])
 def health_check():
     """Root endpoint — confirms the API is running."""
     import os
