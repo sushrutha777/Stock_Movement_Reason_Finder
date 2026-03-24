@@ -1,16 +1,11 @@
 import streamlit as st
-import os
-from dotenv import load_dotenv
 import plotly.graph_objects as go
 import pandas as pd
-from backend.spike_detector import SpikeDetector
-from backend.news_fetcher import NewsFetcher
-from backend.reasoning import ReasoningGenerator
-from utils.nifty100 import NIFTY100
+import requests
+import yfinance as yf
 
-# Load env
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# This is your live Render API! Streamlit will now act purely as the Frontend
+API_BASE_URL = "https://stock-movement-reason-finder.onrender.com"
 
 st.set_page_config(page_title="Stock Movement Reason Finder", layout="wide")
 
@@ -24,41 +19,31 @@ analysis_type = st.radio("Select Analysis Type:", ["🚀 Top 5 Gainers", "📉 T
 if "top5_df" not in st.session_state:
     st.session_state.top5_df = None
 
-# Create class instances once
-spike = SpikeDetector(period="7d", interval="1d")  
-reasoner = ReasoningGenerator(api_key=GEMINI_API_KEY)
-
 if st.button("🔍 Analyze"):
-    results = []
-
-    with st.spinner("Fetching stock data for NIFTY100..."):
-        for ticker in NIFTY100:
-            # OOP CALL
-            spike.period = f"{days_range}d"  
-            df = spike.get_recent_data(ticker)
-
-            if df is not None and not df.empty:
-                if "Close" in df.columns and "Open" in df.columns:
-                    try:
-                        change = round(((df["Close"].iloc[-1] - df["Open"].iloc[0]) / df["Open"].iloc[0]) * 100, 2)
-                        results.append((ticker, change, df))
-                    except Exception:
-                        continue
-
-    if not results:
-        st.error("No stock data found")
-        st.session_state.top5_df = None
-    else:
-        df_changes = pd.DataFrame(results, columns=["Ticker", "Change%", "Data"])
-        df_changes.sort_values(by="Change%", ascending=False, inplace=True)
-
-        # Gainers or Losers based on selection 
-        if analysis_type == "🚀 Top 5 Gainers":
-            top5 = df_changes.head(5).copy()
-        else:  # 📉 Top 5 Losers
-            top5 = df_changes.tail(5).iloc[::-1].copy()
-
-        st.session_state.top5_df = top5
+    with st.spinner("Fetching top movers from API... this might take a moment."):
+        # 1. Call the remote API instead of running all the math locally!
+        try:
+            response = requests.get(f"{API_BASE_URL}/top-movers", params={"period": f"{days_range}d", "top_n": 5})
+            response.raise_for_status()
+            data = response.json()
+            
+            # Extract gainers or losers based on user selection
+            if analysis_type == "🚀 Top 5 Gainers":
+                movers = data.get("top_gainers", [])
+            else:
+                movers = data.get("top_losers", [])
+                
+            if not movers:
+                st.error("No stock data found.")
+                st.session_state.top5_df = None
+            else:
+                df_changes = pd.DataFrame(movers)
+                # DataFrame has columns: ['ticker', 'change_percent']
+                df_changes.rename(columns={"ticker": "Ticker", "change_percent": "Change%"}, inplace=True)
+                st.session_state.top5_df = df_changes
+        except Exception as e:
+            st.error(f"Failed to fetch data from API. Ensure your Render server is live! Error: {e}")
+            st.session_state.top5_df = None
 
 # If top5 computed, always show table & selection
 if st.session_state.top5_df is not None:
@@ -66,7 +51,7 @@ if st.session_state.top5_df is not None:
     top5_df = st.session_state.top5_df.copy()
 
     # display table
-    display = top5_df[["Ticker", "Change%"]].reset_index(drop=True)
+    display = top5_df.copy()
     display.index = display.index + 1
     display.index.name = ""
     display["Change%"] = display["Change%"].apply(lambda x: f"{x:+.2f}%")
@@ -85,38 +70,46 @@ if st.session_state.top5_df is not None:
             for ticker in selected_tickers:
                 row = top5_df[top5_df["Ticker"] == ticker].iloc[0]
                 change = row["Change%"]
-                df = row["Data"]
                 sign = "+" if change > 0 else ""
                 st.write(f"### {ticker} ({sign}{change:.2f}%)")
 
-                # Chart
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(x=df.index, y=df["Close"],
-                                         mode="lines+markers", name="Close Price"))
-                fig.update_layout(
-                    title=f"{ticker} Closing Prices",
-                    xaxis_title="Date",
-                    yaxis_title="Price",
-                    template="plotly_white",
-                    height=380,
-                )
-                st.plotly_chart(fig, use_container_width=True)
+                # Fetch data just for drawing the Chart (Streamlit UI feature)
+                with st.spinner(f"Loading chart for {ticker}..."):
+                    t = yf.Ticker(ticker)
+                    df = t.history(period=f"{days_range}d", interval="1d")
+                    
+                    if not df.empty:
+                        fig = go.Figure()
+                        fig.add_trace(go.Scatter(x=df.index, y=df["Close"],
+                                                 mode="lines+markers", name="Close Price"))
+                        fig.update_layout(
+                            title=f"{ticker} Closing Prices",
+                            xaxis_title="Date",
+                            yaxis_title="Price",
+                            template="plotly_white",
+                            height=380,
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
+                    else:
+                        st.warning("Could not load chart data.")
 
-                # News
-                news = NewsFetcher(query=ticker, max_headlines=5)
-                headlines = news.fetch()
+                # 2. Call the remote API for News & AI Reasoning! 
+                with st.spinner(f"Requesting AI reasoning from Render API for {ticker}..."):
+                    try:
+                        reason_resp = requests.get(f"{API_BASE_URL}/reason/{ticker}", params={"period": f"{days_range}d"})
+                        reason_resp.raise_for_status()
+                        reason_data = reason_resp.json()
+                        
+                        headlines = reason_data.get("headlines", [])
+                        if headlines:
+                            st.subheader("📰 Latest News Headlines")
+                            for h in headlines:
+                                st.markdown(f"- [{h['title']}]({h['link']})", unsafe_allow_html=True)
+                        else:
+                            st.info("No recent headlines found for this ticker.")
+                        
+                        st.subheader("Summary")
+                        st.markdown(reason_data.get("reason", "No reasoning generated."), unsafe_allow_html=True)
 
-                if headlines:
-                    st.subheader("📰 Latest News Headlines")
-                    for h in headlines:
-                        st.markdown(f"- [{h['title']}]({h['link']})", unsafe_allow_html=True)
-                else:
-                    st.info("No recent headlines found for this ticker.")
-
-                # Reasoning
-                movement = "gained" if change > 0 else "dropped"
-                stock_info = f"{ticker} {movement} {abs(change):.2f}% in last {days_range} days."
-
-                reasoning_text = reasoner.generate_reasoning(stock_info, headlines)
-                st.subheader("Summary")
-                st.markdown(reasoning_text, unsafe_allow_html=True)
+                    except Exception as e:
+                        st.error(f"Failed to fetch AI reasoning from API: {e}")
