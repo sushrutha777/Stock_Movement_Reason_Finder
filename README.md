@@ -1,40 +1,46 @@
 # 📈 Stock Movement Reason Finder
 
-This project is a **stock movement reason finder web app** built with **Streamlit**.  
-It analyzes **NIFTY100 stocks**, identifies **top gainers and losers**, and provides **AI-powered reasoning** for major price movements using **Google RSS news** and **Gemini Pro API**.  
+A modern, **AI-augmented financial analysis tool** designed to explain NIFTY100 stock price movements using real-time news and Gemini 2.5 AI.
 
-## 🚀 Features
-- **Top 5 Gainers & Losers** detection based on stock price changes.
-- **Google RSS news fetching** to gather relevant headlines for each stock.
-- **AI-powered explanations** using Gemini Pro API for price spikes/drops.
-- **Interactive Streamlit UI** to select day ranges and analysis type.
-- **Modular backend** with separate scripts for news fetching, reasoning, spike detection, and top movers.
-- Optimized with **`@st.cache_resource`** (or Streamlit caching) to reduce redundant API calls.
+## 🏗️ Architecture: Client-Server Model
+The project has been refactored into a decoupled, production-ready architecture:
 
-## 📦 Installation and Setup
+1. **Backend (FastAPI):** Hosted on **Render**, handles heavy computation, Yahoo Finance data fetching, news aggregation, and Gemini AI reasoning.
+2. **Frontend (Streamlit):** Hosted on **Streamlit Cloud**, providing a lightweight, interactive UI that communicates with the backend via RESTful API calls.
 
-1. Clone this repository:
+## 🚀 Live Links
+- **🔥 Frontend App:** [stock-movement-reason-finder.streamlit.app](https://stock-movement-reason-finder.streamlit.app/)
+- **⚙️ Backend API:** [stock-movement-reason-finder.onrender.com](https://stock-movement-reason-finder.onrender.com/docs) (Swagger UI)
+
+## ✨ key Features
+- **Top Movers Detection:** Automatically identifies the top 5 gainers and losers in the NIFTY100.
+- **AI-Powered Reasoning:** Uses **Gemini 2.5 Flash** to analyze Google RSS news and provide concise, bulleted summaries for price spikes/drops.
+- **Interactive Visualization:** Renders interactive stock charts using **Plotly**, with data served directly from the backend API.
+- **Decoupled Security:** API keys are stored securely as Environment Variables on Render, preventing leaks and keeping the frontend lightweight.
+
+## 📦 Project Structure
+- `/app`: FastAPI application (Main entry: `app/main.py`)
+- `/backend`: Core business logic (Spike detection, News, Reasoning)
+- `/utils`: Helper modules (NIFTY100 ticker list)
+- `app.py`: Streamlit frontend application
+
+## 🛠️ Local Setup
+
+1. **Clone & Install:**
    ```bash
    git clone https://github.com/sushrutha777/Stock_Movement_Reason_Finder.git
    cd Stock_Movement_Reason_Finder
-2. Install uv(If not installed):
+   pip install -r requirements.txt
+   ```
+
+2. **Run Backend (Optional):**
    ```bash
-   pip install uv
-3. Create Virtual Environment:
+   uvicorn app.main:app --reload
+   ```
+
+3. **Run Frontend:**
    ```bash
-    # Create virtual environment
-    uv venv
-    # Activate the virtual environment
-    # On Windows:
-    .venv\Scripts\activate
-    # On macOS/Linux:
-    source .venv/bin/activate
-4. Install the required dependencies:
-   ```bash
-    uv add -r requirements.txt
-5. Create a .env file in the project root and add your Google Gemini API key:
-   ```bash
-    GEMINI_API_KEY=your_api_key_here
-6. Run the Streamlit app:
-   ```bash
-    streamlit run app.py
+   streamlit run app.py
+   ```
+
+---
