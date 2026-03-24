@@ -10,7 +10,7 @@ The project has been refactored into a decoupled, production-ready architecture:
 
 ## 🚀 Live Links
 - **🔥 Frontend App:** [stock-movement-reason-finder.streamlit.app](https://stock-movement-reason-finder.streamlit.app/)
-- **⚙️ Backend API:** [stock-movement-reason-finder.onrender.com](https://stock-movement-reason-finder.onrender.com/docs) (Swagger UI)
+- **⚙️ Backend API:** [stock-movement-reason-finder.onrender.com](https://stock-movement-reason-finder.onrender.com/docs)
 
 ## ✨ key Features
 - **Top Movers Detection:** Automatically identifies the top 5 gainers and losers in the NIFTY100.
