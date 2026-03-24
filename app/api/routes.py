@@ -27,10 +27,7 @@ load_dotenv()
 
 router = APIRouter()
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
 # Pre-build a set of valid base names (without ".NS") for user-friendly lookup
 _VALID_TICKERS = {t.replace(".NS", "").upper(): t for t in NIFTY100}
 
@@ -56,11 +53,7 @@ def _resolve_ticker(stock: str) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
 # Endpoints
-# ---------------------------------------------------------------------------
-
-
 @router.get(
     "/spike/{stock}",
     response_model=SpikeResponse,
