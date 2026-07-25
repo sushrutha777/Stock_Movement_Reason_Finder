@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 import requests
+import math
 
 # This is your live Render API!
 API_BASE_URL = "https://stock-movement-reason-finder.onrender.com"
@@ -49,7 +50,11 @@ if st.session_state.top5_df is not None:
     display = top5_df.copy()
     display.index = display.index + 1
     display.index.name = ""
-    display["Change%"] = display["Change%"].apply(lambda x: f"{x:+.2f}%")
+    def _safe_format(x):
+        if x is None or math.isnan(x):
+            return "N/A"
+        return f"{x:+.2f}%"
+    display["Change%"] = display["Change%"].apply(_safe_format)
     st.dataframe(display, use_container_width=True)
 
     st.markdown("---")

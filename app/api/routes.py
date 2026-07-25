@@ -4,6 +4,7 @@ API routes for the Stock Movement Reason Finder.
 All business logic is delegated to the existing backend/ and utils/ modules.
 """
 
+import math
 import os
 from typing import Optional
 
@@ -188,6 +189,8 @@ def get_top_movers(
                             * 100,
                             2,
                         )
+                        if math.isnan(change):
+                            continue
                         results.append((ticker, change))
                     except Exception:
                         continue
